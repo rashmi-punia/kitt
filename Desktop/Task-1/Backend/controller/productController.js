@@ -42,6 +42,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     reviews,
     isFreeDelivery,
     deliveryCharge,
+    seller
   } = req.body;
 
   try {
@@ -66,6 +67,7 @@ export const createProduct = asyncHandler(async (req, res) => {
       isFreeDelivery,
       deliveryCharge,
       user: req.user._id,
+      seller
     });
 
     const createdProduct = await product.save();

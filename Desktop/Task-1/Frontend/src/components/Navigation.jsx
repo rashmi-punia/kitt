@@ -209,9 +209,9 @@ export default function Navigation() {
           />
         </motion.div>
         <div className="flex items-center divide-x-2 *:px-5 g-green-200 *:capitalize ">
-          <button className="hover:text-purple-900 hover:underline underline-offset-8">
+          <Link to="/addProduct" className="hover:text-purple-900 hover:underline underline-offset-8">
             become a seller
-          </button>
+          </Link>
           <div className="flex items-center space-x-8 *:px-2 relative">
             <Menu as="div" className="relative ml-3">
               <div>

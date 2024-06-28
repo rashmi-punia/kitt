@@ -21,11 +21,11 @@ const productSchema = new mongoose.Schema({
   },
   discountPrice: { type: Number },
 
-  // category: {
-  //   type: String,
-  //   required: true,
+  category: {
+    type: String,
+    required: true,
     
-  // },
+  },
   seller:{
     type : String,
     required : true
@@ -81,11 +81,11 @@ const productSchema = new mongoose.Schema({
     },
   },
 
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    required : true,
-    ref: "Category",
-  },
+  // category: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required : true,
+  //   ref: "Category",
+  // },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

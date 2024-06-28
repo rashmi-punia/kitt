@@ -9,6 +9,8 @@ import ErrorMessage from "./ErrorMessage";
 // import { ADD_TO_CART, REMOVE_FROM_CART } from '../constants/filterConstants';
 import { addToCart, removeItemFromCart } from "../actions/cartActions";
 
+  const formatImagePath = (path) => path.replace(/\\/g, "/");
+
 const RenderProducts = () => {
   const dispatch = useDispatch();
 
@@ -65,17 +67,17 @@ const RenderProducts = () => {
 
   return (
     <>
-      <div className="w-[70vw] overflow-auto space-x-4 space-y-3 flex justify-start items-baseline  flex-wrap">
+      <div className="w-[70vw] space-y-3 grid grid-cols-4 items-baseline ">
         {loading && <Loading />}
         {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
         {transformProducts().map((product) => (
           <Link
             key={product._id}
-            className="group border  rounded-lg overflow-hidden w-[15vw]"
+            className="group border  rounded-lg overflow-hidden w-[16vw]"
           >
             <div className="h-[35vh] relative overflow-hidden flex items-center justify-center">
               <img
-                src={product.images[0]}
+                src={formatImagePath(product.images[0])}
                 className="object-cover relative h-full w-full object-center group-hover:opacity-85"
               />
               {product.stock ? (
