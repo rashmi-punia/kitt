@@ -21,26 +21,27 @@ export const listProducts = () => async(dispatch) =>{
     })}
 }
 
-export const createProduct =
-  (
-    title,
-    description,
-    price,
-    discountPercentage,
-    seller,
-    brand,
-    stock,
-    ratings,
-    reviews,
-    category,
-    isFreeDelivery,
-    deliveryCharge,
-    images,
-    colors,
-    sizes
-  ) =>
+export const createProduct =(formData, images) =>
   async (dispatch, getState) => {
     try {
+      const {
+         title,
+          description,
+          price,
+          discountPercentage,
+          seller,
+          brand,
+          stock,
+          ratings,
+          reviews,
+          category,
+          isFreeDelivery,
+          deliveryCharge,
+          images,
+          colors,
+          sizes,
+      } = formData
+      
       dispatch({ type: PRODUCTS_CREATE_REQUEST });
 
       const {

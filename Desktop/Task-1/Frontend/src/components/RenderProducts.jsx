@@ -6,10 +6,8 @@ import { motion } from "framer-motion";
 import { BsFillStarFill } from "react-icons/bs";
 import Loading from "./Loading";
 import ErrorMessage from "./ErrorMessage";
-// import { ADD_TO_CART, REMOVE_FROM_CART } from '../constants/filterConstants';
 import { addToCart, removeItemFromCart } from "../actions/cartActions";
 
-  const formatImagePath = (path) => path.replace(/\\/g, "/");
 
 const RenderProducts = () => {
   const dispatch = useDispatch();
@@ -28,13 +26,18 @@ const RenderProducts = () => {
   const { byFreeDelivery, byRating, sort, searchQuery, byDiscount } =
     filterState;
 
+    const sanitizeImageUrl = (url) => {
+      return url.replace(/\\/g, "/");
+    };
+
+
+
   const transformProducts = () => {
     if (!productArray || productArray.length === 0) {
       console.log("Product array is empty or undefined");
       return [];
     }
     let sortedProducts = [...productArray];
-    // console.log("initial : ", sortedProducts);
 
     if (sort) {
       sortedProducts = sortedProducts.sort((a, b) =>
@@ -61,6 +64,9 @@ const RenderProducts = () => {
         product.title.toLowerCase().includes(searchQuery)
       );
     }
+    sortedProducts = sortedProducts.map(product => ({
+      ...product, images: product.images.map(sanitizeImageUrl)
+    }))
     console.log(sortedProducts);
     return sortedProducts;
   };
@@ -77,7 +83,7 @@ const RenderProducts = () => {
           >
             <div className="h-[35vh] relative overflow-hidden flex items-center justify-center">
               <img
-                src={formatImagePath(product.images[0])}
+                src={product.images[0]}
                 className="object-cover relative h-full w-full object-center group-hover:opacity-85"
               />
               {product.stock ? (
@@ -121,11 +127,7 @@ const RenderProducts = () => {
                 {cart.find((item) => item._id === product._id) ? (
                   <button
                     onClick={() => dispatch(removeItemFromCart(product._id))}
-                    // dispatch({
-                    //   type: REMOVE_FROM_CART,
-                    //   payload: product,
-                    // })
-
+                  
                     className="text-white  px-1 hover:bg-opacity-75 rounded bg-red-500"
                   >
                     Remove from cart
@@ -133,13 +135,8 @@ const RenderProducts = () => {
                 ) : (
                   <>
                     <button
-                      onClick={() => dispatch(addToCart(product._id, 1))}
-                      // onClick={() =>
-                      //   dispatch({
-                      //     type: ADD_TO_CART,
-                      //     payload: product,
-                      //   })
-                      // }
+                      onClick={() => dispatch(addToCart(product, 1))}
+                  
                       disabled={!product.stock}
                       className="text-white  disabled:opacity-50 px-1 hover:bg-opacity-75 rounded bg-blue-500"
                     >

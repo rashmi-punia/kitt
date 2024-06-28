@@ -19,17 +19,17 @@ app.use(express.json())
 dotenv.config()
 
 connectDB()
-const __dirname = path.resolve();
-const uploadDir = path.join(__dirname, "uploads");
+// const __dirname = path.resolve();
+// const uploadDir = path.join(__dirname, "uploads");
 
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
-}
+// if (!fs.existsSync(uploadDir)) {
+//   fs.mkdirSync(uploadDir);
+// }
 
 
 
-app.use("/api/upload", updateRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+// app.use("/api/upload", updateRoutes);
+// app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 
 

@@ -146,7 +146,7 @@ export default function Navigation() {
   const { searchQuery } = filterState;
 
   return (
-    <div className="shadow border-b-2 px-4">
+    <div className="shadow bg-pink-800 text-white border-b-2 px-4">
       <div className="flex mx-12 justify-between items-center py-4 h-full ">
         <div>Shopify</div>
         <div className="flex *:px-4">
@@ -205,11 +205,11 @@ export default function Navigation() {
             }
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="px-4 outline-none flex-grow"
+            className="px-4 bg-pink-800 text-white outline-none flex-grow"
           />
         </motion.div>
         <div className="flex items-center divide-x-2 *:px-5 g-green-200 *:capitalize ">
-          <Link to="/addProduct" className="hover:text-purple-900 hover:underline underline-offset-8">
+          <Link to="/addProduct" className="hover:text-pink-300 hover:underline underline-offset-8">
             become a seller
           </Link>
           <div className="flex items-center space-x-8 *:px-2 relative">

@@ -203,7 +203,6 @@ const Checkout = () => {
                   >
                     <div className="flex px-3  gap-x-4">
                       <input
-                        // onChange=
                         name="address"
                         type="radio"
                         value=""

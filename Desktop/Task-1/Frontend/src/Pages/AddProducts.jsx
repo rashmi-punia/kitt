@@ -4,80 +4,103 @@ import { createProduct } from "../actions/productActions";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
+// import { URL } from "window";
+
 
 const AddProducts = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-
-  const [price, setPrice] = useState(0);
-  const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [seller, setSeller] = useState("");
-  const [brand, setBrand] = useState("");
-  const [stock, setStock] = useState(0);
-  const [images, setImages] = useState([]);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    price: 0,
+    discountPercentage: 0,
+    seller: "",
+    brand: "",
+    stock: 0,
+    images: [],
+    colors: [],
+    sizes: [],
+    ratings: 0,
+    reviews: 0,
+    isFreeDelivery: false,
+    category: "",
+    user: "",
+  });
   const [picMessage,setPicMessage] = useState("")
   const [imagePreviews, setImagePreviews] = useState([]);
 
-  const [colors, setColors] = useState([]);
-  const [sizes, setSizes] = useState([]);
-  const [ratings, setRatings] = useState(0);
-  const [reviews, setReviews] = useState(0);
-  const [isFreeDelivery, setIsFreeDelivery] = useState(false);
-  const [deliveryCharge, setDeliveryCharge] = useState(0);
-  const [category, setCategory] = useState("");
-
   const dispatch = useDispatch();
+    const navigate = useNavigate();
+
   const productCreate = useSelector((state) => state.productCreate);
   const { loading, error, success } = productCreate;
+
   useEffect(() => {
     if (success) {
       navigate("/");
     }
   }, [dispatch, success]);
 
+  const handleChange =(e)=>{
+    const {name, value, type} = e.target
+    setFormData((prev)=> ({
+      ...prev,
+      [name] : type === 'number' ? Number(value) : value
+    }))
+  }
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setImages(files);
-    const filePreviews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews(filePreviews);
+    const allowedExtensions = ["jpg", "jpeg", "png"];
+    const validFiles = selectedFiles.filter((file) =>
+      allowedExtensions.includes(file.name.split(".").pop().toLowerCase())
+    );
+    if (validFiles.length !== selectedFiles.length) {
+      console.error("Invalid file types. Only jpg, jpeg, and png are allowed.");
+      return;
+    }
+setFormData((prev)=>({
+  ...prev, images:validFiles
+}))
+    const imagePreviews = validFiles.map((file) => URL.createObjectURL(file));
+    setImagePreviews(imagePreviews);
   };
 
   const handleColorsChange = (e) => {
-    const options = Array.from(e.target.options);
-    const selectedColors = options
-      .filter((option) => option.selected)
-      .map((option) => option.value);
-    setColors(selectedColors);
+    const newColor = e.target.value
+    setFormData((prev)=>({...prev, colors :[...prev.colors, newColor]}))
   };
 
   const handleSizesChange = (e) => {
-    const options = Array.from(e.target.options);
-    const selectedSizes = options
-      .filter((option) => option.selected)
-      .map((option) => option.value);
-    setSizes(selectedSizes);
+     const newSize = e.target.value;
+     setFormData((prevData) => ({
+       ...prevData,
+       sizes: [...prevData.sizes, newSize],
+     }));
   };
 
  
 
   const resetHandler = () => {
-    setTitle("");
-    setDescription("");
-    setPrice(0);
-    setDiscountPercentage(0);
-    setStock(1);
-    setBrand("");
-    setImages([]);
-    setColors([]);
-    setSizes([]);
-    setCategory("");
-    setRatings(0);
-    setReviews(0);
-    setIsFreeDelivery(false);
-    setDeliveryCharge(0);
+    setFormData({
+      title: "",
+      description: "",
+      price: 0,
+      discountPercentage: 0,
+      seller: "", 
+      brand: "",
+      stock: 1, 
+      images: [],
+      colors: [],
+      sizes: [],
+      category: "", 
+      ratings: 0,
+      reviews: 0,
+      isFreeDelivery: false,
+      deliveryCharge: function () {
+        return this.isFreeDelivery ? null : 0;
+      },
+    });
   };
-
-  const navigate = useNavigate();
   
    const postDetails = async (pics) => {
      const uploadedImages = [];
@@ -115,61 +138,40 @@ const AddProducts = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !title ||
-      !description ||
-      !category ||
-      !price ||
-      !seller ||
-      !brand ||
-      !stock ||
-      !ratings ||
-      !reviews ||
-      isFreeDelivery === undefined
-    ) {
-      alert("Please fill in all required fields.");
-      return;
-    }
-    const uploadedImages = await postDetails(images);
-     if (uploadedImages.length !== images.length) {
+   
+    const uploadedImages = await postDetails(formData.images);
+     if (uploadedImages.length !== formData.images.length) {
        alert("Some images failed to upload.");
        return;
      }
 
     dispatch(
       createProduct(
-        title,
-        description,
-        price,
-        discountPercentage,
-        seller,
-        brand,
-        stock,
-        ratings,
-        reviews,
-        category,
-        isFreeDelivery,
-        deliveryCharge,
-      uploadedImages,
-        colors,
-        sizes
+       {...formData,
+        images: uploadedImages
+       }
       )
     );
-     resetHandler()
-     navigate("/")
+    //  resetHandler()
+    //  navigate("/")
   };
 
   return (
-    <div className="mx-20 ">
-      <div className="p-5">
+    <div className="my-4">
+      <div className="p-5 w-[60vw] border shadow shadow-slate-300 rounded mx-auto">
         {loading && <Loading />}
         {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
-        {picMessage && <ErrorMessage variant="danger">{picMessage}</ErrorMessage>}
-        <span className="text-3xl my-4 font-light">
+        {picMessage && (
+          <ErrorMessage variant="danger">{picMessage}</ErrorMessage>
+        )}
+        <div className="text-3xl w-full text-center mb-4 font-light">
           Create a Product as seller
-        </span>
+        </div>
         <hr />
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 mt-8 gap-3">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-2 mt-8 *:px-4 gap-y-1"
+        >
           <div>
             <label htmlFor="title" className="text-gray-900">
               Enter title
@@ -179,10 +181,10 @@ const AddProducts = () => {
                 id="title"
                 name="title"
                 type="text"
-                value={title}
+                value={formData.title}
                 required
                 placeholder="Title"
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleChange}
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -196,11 +198,21 @@ const AddProducts = () => {
                 id="price"
                 name="price"
                 type="number"
-                value={price}
+                value={formData.price}
                 required
                 min={1}
                 placeholder="like 230"
-                onChange={(e) => setPrice(Number(e.target.value))}
+                onChange={(e) => {
+                  const newPrice = parseFloat(e.target.value);
+                  if (isNaN(newPrice)) {
+                    console.error("Invalid price. Please enter a number.");
+                    return;
+                  }
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    price: newPrice,
+                  }));
+                }}
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -214,12 +226,14 @@ const AddProducts = () => {
                 id="discountPercent"
                 name="discountPercent"
                 type="number"
-                value={discountPercentage}
+                value={formData.discountPercentage}
                 min={1}
                 max={99}
                 required
                 placeholder="like 230"
-                onChange={(e) => setDiscountPercentage(Number(e.target.value))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, discountPercentage: e.target.value }))
+                }
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -234,9 +248,9 @@ const AddProducts = () => {
                 name="seller"
                 type="text"
                 required
-                value={seller}
+                value={formData.seller}
                 placeholder="Seller name"
-                onChange={(e) => setSeller(e.target.value)}
+                onChange={handleChange}
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -251,9 +265,9 @@ const AddProducts = () => {
                 name="brand"
                 type="text"
                 required
-                value={brand}
+                value={formData.brand}
                 placeholder="Brand name"
-                onChange={(e) => setBrand(e.target.value)}
+                onChange={handleChange}
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -268,9 +282,9 @@ const AddProducts = () => {
                 name="category"
                 type="text"
                 required
-                value={category}
+                value={formData.category}
                 placeholder="Category"
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={handleChange}
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -285,9 +299,10 @@ const AddProducts = () => {
                 name="stock"
                 type="number"
                 required
-                value={stock}
+                min={1}
+                value={formData.stock}
                 placeholder="In Stock"
-                onChange={(e) => setStock(e.target.value)}
+                onChange={handleChange}
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -302,9 +317,13 @@ const AddProducts = () => {
                 name="rating"
                 type="number"
                 required
-                value={ratings}
+                min={0}
+                max={5}
+                value={formData.ratings}
                 placeholder="Rating"
-                onChange={(e) => setRatings(e.target.value)}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, ratings: e.target.value }))
+                }
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -318,10 +337,13 @@ const AddProducts = () => {
                 id="review"
                 name="review"
                 type="number"
+                min={1}
                 required
-                value={reviews}
+                value={formData.reviews}
                 placeholder="review"
-                onChange={(e) => setReviews(Number(e.target.value))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, reviews: e.target.value }))
+                }
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
@@ -342,7 +364,7 @@ const AddProducts = () => {
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
               <ul>
-                {images.map((img, index) => (
+                {formData.images.map((img, index) => (
                   <li className="bg-slate-100" key={index}>
                     {img.name}
                   </li>
@@ -350,45 +372,48 @@ const AddProducts = () => {
               </ul>
             </div>
           </div>
-          <div>
-            {imagePreviews.length > 0 && (
+          {imagePreviews.length > 0 && (
+            <div>
               <div className="w-[12vw]">
                 {imagePreviews.map((preview, i) => (
-                  <img src={preview} alt="Not working" />
+                  <img src={preview} key={preview} alt="Not working" />
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          <div>
+          <div className="mt-2">
             <label className="text-gray-900">Colors</label>
             <select
-              multiple
+              // multiple
               onChange={handleColorsChange}
-              className="border *:border bg-slate-100"
+              className="bg-white border rounded px-1 mx-2"
             >
               <option value="Red">Red</option>
               <option value="Green">Green</option>
               <option value="Blue">Blue</option>
               <option value="Yellow">Yellow</option>
             </select>
-            <ul>
-              {colors.map((color, index) => (
+            <ul className="p-1 my-2 *:bg-slate-50/60 *:py-0.5 *:px-1.5 *:rounded flex flex-wrap space-x-1 *:my-1">
+              {formData.colors.map((color, index) => (
                 <li key={index}>{color}</li>
               ))}
             </ul>
           </div>
 
-          <div>
+          <div className="mt-2">
             <label>Sizes</label>
-            <select multiple onChange={handleSizesChange}>
+            <select
+              onChange={handleSizesChange}
+              className="bg-white border rounded px-1 mx-2"
+            >
               <option value="Small">Small</option>
               <option value="Medium">Medium</option>
               <option value="Large">Large</option>
               <option value="X-Large">X-Large</option>
             </select>
-            <ul>
-              {sizes.map((size, index) => (
+            <ul className="p-1 my-2 *:bg-slate-50/60 *:py-0.5 *:px-1.5 *:rounded flex flex-wrap space-x-1 *:my-1">
+              {formData.sizes.map((size, index) => (
                 <li key={index}>{size}</li>
               ))}
             </ul>
@@ -396,11 +421,17 @@ const AddProducts = () => {
 
           <div>
             <input
+              id="freeDelivery"
               type="checkbox"
-              checked={isFreeDelivery}
-              onChange={(e) => setIsFreeDelivery(e.target.checked)}
+              checked={formData.isFreeDelivery}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  isFreeDelivery: !prev.isFreeDelivery,
+                }))
+              }
             />
-            <label htmlFor="freeDelivery" className="text-gray-900">
+            <label htmlFor="freeDelivery" className="px-1.5 text-gray-900">
               Free delivery
             </label>
           </div>
@@ -414,30 +445,35 @@ const AddProducts = () => {
                 id="deliveryCharge"
                 name="deliveryCharge"
                 type="number"
-                value={deliveryCharge}
-                disabled={isFreeDelivery}
+                min={0}
+                value={formData.deliveryCharge}
+                disabled={formData.isFreeDelivery}
                 placeholder="Delivery charge"
-                onChange={(e) => setDeliveryCharge(e.target.value)}
+                onChange={handleChange}
                 className="block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
             </div>
           </div>
 
-          <div className="col-span-2">
+          <div className="col-span-2 mt-2">
             <label>Description</label>
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
+            name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={4}
               required
-              className="border"
+              className="border w-full my-1"
             ></textarea>
           </div>
-
-          <button type="submit" className="bg-green-400 p-0.5">
-            Submit
-          </button>
-          <button onClick={resetHandler} className="bg-blue-300 p-0.5">Reset</button>
+          <div className="col-span-2 text-center space-x-2">
+            <button type="submit" className="bg-green-500 hover:bg-green-700 rounded-sm py-1 px-2 text-white">
+              Submit
+            </button>
+            <button onClick={resetHandler} className="bg-pink-700 hover:bg-pink-800 rounded-sm py-1 px-2 text-white">
+              Reset
+            </button>
+          </div>
         </form>
       </div>
     </div>

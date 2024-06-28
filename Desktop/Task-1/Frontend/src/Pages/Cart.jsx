@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { FormControl } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-// import { CHANGE_CART_QTY, REMOVE_FROM_CART } from "../constants/filterConstants";
 import { removeItemFromCart, updateCartItemQty } from "../actions/cartActions";
 import Loading from "../components/Loading";
 import ErrorMessage from "../components/ErrorMessage";
@@ -48,12 +47,6 @@ const Cart = () => {
                 </div>
                 <button
                 onClick={removeItemFromCart(prod._id,prod.qty)}
-                //  onClick={() =>(
-                //   dispatch({
-                //     type : REMOVE_FROM_CART,
-                //     payload : prod
-                //   })
-                // )}
                  className="text-red-500">Remove</button>
               </div>
               <div className="flex items-baseline space-x-2">

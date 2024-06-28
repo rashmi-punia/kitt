@@ -12,7 +12,7 @@ import {
 } from "../constants/filterConstants";
 
 export const addToCart =
-  (productId, quantity) => async (dispatch, getState) => {
+  (product, quantity) => async (dispatch, getState) => {
     try {
       dispatch({ type: ADD_ITEM_TO_CART_REQUEST });
       const {
@@ -26,7 +26,7 @@ export const addToCart =
       };
       const { data } = await axios.post(
         "http://localhost:7000/api/cart/add-item",
-        { productId, quantity },
+        { product, quantity },
         config
       );
 
